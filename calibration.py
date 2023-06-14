@@ -14,6 +14,11 @@ objpoints = [] # 3d point in real world space
 imgpoints = [] # 2d points in image plane.
 
 images = glob.glob('chessboard/*.jpg')
+# Note: Only images
+# chessboard\PXL_20230614_152508190.jpg
+# chessboard\PXL_20230614_153953368.jpg
+# chessboard\PXL_20230614_154003572.jpg
+# were good. Error came out to 0.26910541997656573 so it worked out.
 
 for fname in images:
     img = cv2.imread(fname)
