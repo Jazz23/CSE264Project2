@@ -1,7 +1,7 @@
-path = ''
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+
 
 def drawlines(img1,img2,lines,pts1,pts2):
     ''' img1 - image on which we draw the epilines for the points in img2
@@ -18,13 +18,13 @@ def drawlines(img1,img2,lines,pts1,pts2):
         img2 = cv2.circle(img2,tuple(pt2),5,color,-1)
     return img1,img2
 
-img1 = cv2.imread(path + 'pair/left.jpg',0)  #queryimage # left image
-img2 = cv2.imread(path + 'pair/right.jpg',0) #trainimage # right image
+img1 = cv2.imread('pair/left.jpg',0)  #queryimage # left image
+img2 = cv2.imread('pair/right.jpg',0) #trainimage # right image
 
 
 # Get the camera matrix and distortion coefficients from calibration
-mtx = np.load(path + 'mtx.npy')
-dist = np.load(path + 'dist.npy')
+mtx = np.load('mtx.npy')
+dist = np.load('dist.npy')
 
 # Undistort points using the camera matrix and distortion coefficients
 h, w = img1.shape[:2]
@@ -69,15 +69,12 @@ for i,(m,n) in enumerate(matches):
 
 
 # Find essential matrix
-pts1 = np.int32(pts1)
-pts2 = np.int32(pts2)
+pts1 = np.float32(pts1)
+pts2 = np.float32(pts2)
 E, mask = cv2.findEssentialMat(pts1,pts2,mtx)
 
 # Decompose the essential matrix into R_L^R and r^R
 R, _, T = cv2.decomposeEssentialMat(E)
-
-print("Rotation matrix: ", R)
-print("Translation: ", T)
 
 pts1 = pts1.reshape(-1,1,2)
 pts2 = pts2.reshape(-1,1,2)
@@ -89,3 +86,30 @@ right_projection = mtx @ cv2.hconcat([R, T])
 triangulation = cv2.triangulatePoints(left_projection, right_projection, pts1, pts2)
 
 print(triangulation)
+
+# _______________________________________________________________________________________________________
+
+# Now we have the list of best matches from both the images. Let's find the Fundamental Matrix.
+# pts1 = np.int32(pts1)
+# pts2 = np.int32(pts2)
+# F, mask = cv2.findFundamentalMat(pts1,pts2,cv2.FM_LMEDS)
+
+# # We select only inlier points
+# pts1 = pts1[mask.ravel()==1]
+# pts2 = pts2[mask.ravel()==1]
+
+# # Find epilines corresponding to points in right image (second image) and
+# # drawing its lines on left image
+# lines1 = cv2.computeCorrespondEpilines(pts2.reshape(-1,1,2), 2,F)
+# lines1 = lines1.reshape(-1,3)
+# img5,img6 = drawlines(img1,img2,lines1,pts1,pts2)
+
+# # Find epilines corresponding to points in left image (first image) and
+# # drawing its lines on right image
+# lines2 = cv2.computeCorrespondEpilines(pts1.reshape(-1,1,2), 1,F)
+# lines2 = lines2.reshape(-1,3)
+# img3,img4 = drawlines(img2,img1,lines2,pts2,pts1)
+
+# plt.subplot(121),plt.imshow(img5)
+# plt.subplot(122),plt.imshow(img3)
+# plt.show()
