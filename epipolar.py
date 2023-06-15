@@ -64,52 +64,6 @@ for i,(m,n) in enumerate(matches):
         pts2.append(kp2[m.trainIdx].pt)
         pts1.append(kp1[m.queryIdx].pt)
 
-
-# _______________________________________________________________________________________________________
-
-
-# Find essential matrix
-pts1 = np.float32(pts1)
-pts2 = np.float32(pts2)
-E, mask = cv2.findEssentialMat(pts1,pts2,mtx)
-
-# Decompose the essential matrix into R_L^R and r^R
-R, _, T = cv2.decomposeEssentialMat(E)
-
-pts1 = pts1.reshape(-1,1,2)
-pts2 = pts2.reshape(-1,1,2)
-
-# https://stackoverflow.com/questions/66361968/is-cv2-triangulatepoints-just-not-very-accurate
-left_projection = mtx @ cv2.hconcat([np.eye(3), np.zeros((3,1))]) # Cam1 is the origin
-right_projection = mtx @ cv2.hconcat([R, T])
-
-triangulation = cv2.triangulatePoints(left_projection, right_projection, pts1, pts2)
-
-print(triangulation)
-
-# _______________________________________________________________________________________________________
-
-# Now we have the list of best matches from both the images. Let's find the Fundamental Matrix.
-# pts1 = np.int32(pts1)
-# pts2 = np.int32(pts2)
-# F, mask = cv2.findFundamentalMat(pts1,pts2,cv2.FM_LMEDS)
-
-# # We select only inlier points
-# pts1 = pts1[mask.ravel()==1]
-# pts2 = pts2[mask.ravel()==1]
-
-# # Find epilines corresponding to points in right image (second image) and
-# # drawing its lines on left image
-# lines1 = cv2.computeCorrespondEpilines(pts2.reshape(-1,1,2), 2,F)
-# lines1 = lines1.reshape(-1,3)
-# img5,img6 = drawlines(img1,img2,lines1,pts1,pts2)
-
-# # Find epilines corresponding to points in left image (first image) and
-# # drawing its lines on right image
-# lines2 = cv2.computeCorrespondEpilines(pts1.reshape(-1,1,2), 1,F)
-# lines2 = lines2.reshape(-1,3)
-# img3,img4 = drawlines(img2,img1,lines2,pts2,pts1)
-
-# plt.subplot(121),plt.imshow(img5)
-# plt.subplot(122),plt.imshow(img3)
-# plt.show()
+# Save the points to files
+np.save('pts1.npy', pts1)
+np.save('pts2.npy', pts2)
