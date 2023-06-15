@@ -12,14 +12,16 @@ objp[:,:2] = np.mgrid[0:7,0:6].T.reshape(-1,2)
 # Arrays to store object points and image points from all the images.
 objpoints = [] # 3d point in real world space
 imgpoints = [] # 2d points in image plane.
-
-images = glob.glob('chessboard/*.jpg')
+path = '/content/drive/MyDrive/Project2/'
+images = glob.glob(path + 'chessboard/*.jpg')
 # Note: Only images
 # chessboard\PXL_20230614_152508190.jpg
 # chessboard\PXL_20230614_153953368.jpg
 # chessboard\PXL_20230614_154003572.jpg
 # were good. Error came out to 0.26910541997656573 so it worked out.
 
+img = cv2.imread(images[0])
+gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 for fname in images:
     img = cv2.imread(fname)
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
